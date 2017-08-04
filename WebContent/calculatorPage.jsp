@@ -1,7 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html> <h1>
-I have done changes in Github 4 Aug
+Caculator I have done changes in Github 4 Aug 
 </h1>
         <body>
                 <form method="post" action="CalculatorController">
