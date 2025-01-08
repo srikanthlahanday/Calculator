@@ -53,39 +53,21 @@ pipeline:
               - identifier: Jan
           execution:
             steps:
-              - stepGroup:
-                  name: Phase
-                  identifier: Phase
-                  strategy:
-                    repeat:
-                      items: <+stage.output.hosts>
-                      maxConcurrency: 1
-                      partitionSize: 1
-                      unit: Count
-                  steps:
-                    - stepGroup:
-                        name: Phase Group
-                        identifier: phase_group
-                        strategy:
-                          repeat:
-                            items: <+repeat.partition>
-                        steps:
-                          - step:
-                              name: Deploy
-                              identifier: Deploy
-                              timeout: 10m
-                              template:
-                                templateRef: account.Default_Install_Jar_Bash
-                                templateInputs:
-                                  type: Command
-                                  spec:
-                                    environmentVariables:
-                                      - name: DestinationDirectory
-                                        type: String
-                                        value: $HOME/<+service.name>/<+env.name>
-                                      - name: WorkingDirectory
-                                        type: String
-                                        value: $HOME/<+service.name>/<+env.name>/tomcat/bin
+              - step:
+                  type: Command
+                  name: Command_1
+                  identifier: Command_1
+                  spec:
+                    onDelegate: false
+                    environmentVariables: []
+                    outputVariables: []
+                    commandUnits:
+                      - identifier: deploy
+                        name: deploy
+                        type: DownloadArtifact
+                        spec:
+                          destinationPath: /target/
+                  timeout: 10m
             rollbackSteps:
               - stepGroup:
                   name: Phase
