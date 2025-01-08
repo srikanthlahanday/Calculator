@@ -32,8 +32,8 @@ pipeline:
             steps:
               - step:
                   type: Run
-                  name: Run_1
+                  name: Maven Build
                   identifier: Run_1
                   spec:
                     shell: Sh
-                    command: echo Welcome
+                    command: mvn clean verify install
