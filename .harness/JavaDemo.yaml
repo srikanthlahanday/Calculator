@@ -47,10 +47,10 @@ pipeline:
           service:
             serviceRef: JavaDemo
           environment:
-            environmentRef: JavaDemo
+            environmentRef: Jan
             deployToAll: false
             infrastructureDefinitions:
-              - identifier: JavaDemo
+              - identifier: Jan
           execution:
             steps:
               - stepGroup:
