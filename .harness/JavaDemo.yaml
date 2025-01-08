@@ -37,3 +37,93 @@ pipeline:
                   spec:
                     shell: Sh
                     command: mvn clean verify install
+    - stage:
+        name: Deploy
+        identifier: Deploy
+        description: ""
+        type: Deployment
+        spec:
+          deploymentType: Ssh
+          service:
+            serviceRef: JavaDemo
+          environment:
+            environmentRef: JavaDemo
+            deployToAll: false
+            infrastructureDefinitions:
+              - identifier: JavaDemo
+          execution:
+            steps:
+              - stepGroup:
+                  name: Phase
+                  identifier: Phase
+                  strategy:
+                    repeat:
+                      items: <+stage.output.hosts>
+                      maxConcurrency: 1
+                      partitionSize: 1
+                      unit: Count
+                  steps:
+                    - stepGroup:
+                        name: Phase Group
+                        identifier: phase_group
+                        strategy:
+                          repeat:
+                            items: <+repeat.partition>
+                        steps:
+                          - step:
+                              name: Deploy
+                              identifier: Deploy
+                              timeout: 10m
+                              template:
+                                templateRef: account.Default_Install_Jar_Bash
+                                templateInputs:
+                                  type: Command
+                                  spec:
+                                    environmentVariables:
+                                      - name: DestinationDirectory
+                                        type: String
+                                        value: $HOME/<+service.name>/<+env.name>
+                                      - name: WorkingDirectory
+                                        type: String
+                                        value: $HOME/<+service.name>/<+env.name>/tomcat/bin
+            rollbackSteps:
+              - stepGroup:
+                  name: Phase
+                  identifier: Phase
+                  strategy:
+                    repeat:
+                      items: <+stage.output.hosts>
+                      maxConcurrency: 1
+                      partitionSize: 1
+                      unit: Count
+                  steps:
+                    - stepGroup:
+                        name: Phase Group Rollback
+                        identifier: phase_group_rollback
+                        strategy:
+                          repeat:
+                            items: <+repeat.partition>
+                        steps:
+                          - step:
+                              name: Rollback
+                              identifier: Rollback
+                              timeout: 10m
+                              template:
+                                templateRef: account.Default_Install_Jar_Bash
+                                templateInputs:
+                                  type: Command
+                                  spec:
+                                    environmentVariables:
+                                      - name: DestinationDirectory
+                                        type: String
+                                        value: $HOME/<+service.name>/<+env.name>
+                                      - name: WorkingDirectory
+                                        type: String
+                                        value: $HOME/<+service.name>/<+env.name>/tomcat/bin
+        tags: {}
+        failureStrategies:
+          - onFailure:
+              errors:
+                - AllErrors
+              action:
+                type: StageRollback
