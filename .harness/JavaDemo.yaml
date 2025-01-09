@@ -67,6 +67,8 @@ pipeline:
                         type: DownloadArtifact
                         spec:
                           destinationPath: ./
+                    delegateSelectors:
+                      - casestudydockerdelegate
                   timeout: 10m
             rollbackSteps:
               - stepGroup:
