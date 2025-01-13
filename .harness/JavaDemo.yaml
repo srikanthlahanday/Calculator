@@ -91,7 +91,15 @@ pipeline:
         spec:
           deploymentType: Ssh
           service:
-            serviceRef: JavaDemo
+            serviceRef: Testingfordeploy
+            serviceInputs:
+              serviceDefinition:
+                type: Ssh
+                spec:
+                  artifacts:
+                    primary:
+                      primaryArtifactRef: <+input>
+                      sources: <+input>
           environment:
             environmentRef: Jan
             deployToAll: false
